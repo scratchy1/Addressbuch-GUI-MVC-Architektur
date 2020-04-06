@@ -1,0 +1,9 @@
+public interface FullPersistence {
+
+    AddressBookDataModel loadBook() throws AddressBookException;
+
+    void storeBook(AddressBookDataModel book) throws AddressBookException;
+}
+/*Hierbei werden die auftretenden Exception (in un- ExceptionseremFall
+Subtypen der Klasse IOException) abgefangen und als sog. cause Chaining
+(Ursache) in ein Objekt der Klasse AddressBookException „verpackt“.*/
