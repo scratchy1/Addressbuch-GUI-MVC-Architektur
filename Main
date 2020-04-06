@@ -1,0 +1,60 @@
+import java.awt.*;
+import java.io.File;
+
+public class Main {
+    private static final String ADDRESSBOOK_DEFAULT_NAME = "test.ab";
+    private SerializationToFilePersistence persistence;
+    private AddressBookDataModel model;
+    private Frame mainFrame;
+    private Controller controller;
+
+    public Main() throws AddressBookException {
+        initModelAndPersistence();
+        PersonPanel personPanel = new PersonPanel(model);
+        Button newPersonButton = new Button("Neuer Eintrag");
+        mainFrame = new AddressBookMainFrame(personPanel, newPersonButton);
+        controller = new Controller(model, personPanel, persistence, mainFrame);
+        newPersonButton.addActionListener(controller);
+        mainFrame.addWindowListener(controller);
+        mainFrame.setVisible(true);
+    }
+
+    private void initModelAndPersistence() throws AddressBookException {
+        String addressBookDirPath = System.getProperty("user.home") + "/addressbooks";
+        File addressBookDir = new File(addressBookDirPath);
+        addressBookDir.mkdir();
+        String addressBookPath = addressBookDirPath + "/" + ADDRESSBOOK_DEFAULT_NAME;
+        persistence = new SerializationToFilePersistence(addressBookPath);
+        File addressBookFile = new File(addressBookPath);
+        if (addressBookFile.exists()) {
+            System.out.println("Adressbuchdatei gefunden, lade Adressbuch.");
+            model = persistence.loadBook();
+        } else {
+            System.out.println("Adressbuchdatei nicht gefunden, erstelle neues Adressbuch.");
+            model = new ArrayListAddressBookDataModel();
+        }
+    }
+
+    public static void main(String[] args) throws AddressBookException{
+        new Main();
+    }
+
+}
+/*
+ * Verbinden der Teilsysteme Für das Starten des Programms sowie das Erzeugen
+ * und Verbinden der oben beschriebenen Teilsysteme haben wir eine Klasse Main
+ * erstellt. Diese erledigt in ihrem (aus der main-Methode aufgerufenen)
+ * Konstruktor folgende Aufgaben: • Initialisierung des Datenmodells durch
+ * Einlesen aus der Datei bzw. Erzeugen einer neuen Instanz der Klasse
+ * AddressBookDataModel und eines für das Laden und Speichern von
+ * Adressbuchdaten zuständigen SerializationToFilePersistence-Objekts. •
+ * Erzeugen eines PersonPanel-Objekts. Dabei wird diesem per Konstruktoraufruf
+ * eine Referenz auf das Datenmodell übergeben. Damit „kennt“ das
+ * PersonPanel-Objekt das Datenmodell. • Erzeugen des „Neuer Eintrag“-Buttons. •
+ * Erzeugen des Hauptfensters. Dabei werden der „Neuer Eintrag“-Button und das
+ * PersonPanel-Objekt übergeben, da diese auf dem Hauptfenster angezeigt werden
+ * sollen. • Erzeugen des Controllers, Anmelden des Controllers als Beobachter
+ * beim „Neuer Eintrag“-Button und beim Hauptfenster. • Sichtbarmachen des
+ * Hauptfensters. Nachdem diese Vorarbeiten erledigt sind, ist das Programm in
+ * seinem Normalzustand: Die Daten des Adressbuchs werden angezeigt und das
+ * Programm wartet auf Aktivitäten der Benutzerin oder des Benutzers.
